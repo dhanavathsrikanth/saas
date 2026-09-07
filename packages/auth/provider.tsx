@@ -20,7 +20,7 @@ export const AuthProvider = ({
 }: AuthProviderProperties) => {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
-  const baseTheme = isDark ? dark : undefined;
+  const theme = isDark ? dark : undefined;
 
   const variables: Theme["variables"] = {
     fontFamily: "var(--font-sans)",
@@ -43,7 +43,7 @@ export const AuthProvider = ({
     organizationPreviewAvatarContainer: "shrink-0",
   };
 
-  const layout: Theme["layout"] = {
+  const options = {
     privacyPageUrl: privacyUrl,
     termsPageUrl: termsUrl,
     helpPageUrl: helpUrl,
@@ -52,7 +52,7 @@ export const AuthProvider = ({
   return (
     <ClerkProvider
       {...properties}
-      appearance={{ layout, baseTheme, elements, variables }}
+      appearance={{ options, theme, elements, variables }}
     />
   );
 };
