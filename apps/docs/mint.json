@@ -65,6 +65,18 @@
       ]
     },
     {
+      "group": "Screenshot API",
+      "pages": [
+        "screenshot-api/quickstart",
+        "screenshot-api/authentication",
+        "screenshot-api/capture",
+        "screenshot-api/jobs",
+        "screenshot-api/usage",
+        "screenshot-api/errors",
+        "screenshot-api/rate-limits"
+      ]
+    },
+    {
       "group": "API Documentation",
       "pages": ["api-reference/introduction"]
     },

@@ -20,6 +20,8 @@
     "@repo/next-config": "workspace:*",
     "@repo/observability": "workspace:*",
     "@repo/payments": "workspace:*",
+    "@repo/rate-limit": "workspace:*",
+    "@repo/screenshot-core": "workspace:*",
     "@sentry/nextjs": "^10.42.0",
     "@t3-oss/env-nextjs": "^0.13.10",
     "import-in-the-middle": "^3.0.0",

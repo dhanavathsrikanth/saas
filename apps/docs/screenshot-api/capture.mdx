@@ -1,0 +1,129 @@
+---
+title: 'Capture a screenshot'
+description: 'POST and GET /v1/screenshot reference with all parameters'
+---
+
+## Create a capture job
+
+<Note>
+  Capture is asynchronous. This endpoint validates, deduplicates, meters, and
+  queues the job, then returns `202 Accepted`. Poll the job — see
+  [Job status](/screenshot-api/jobs).
+</Note>
+
+```http
+POST /v1/screenshot
+GET /v1/screenshot?url=...
+```
+
+`POST` takes a JSON object. `GET` takes the same fields as query parameters (booleans and numbers are coerced; `block_resources`, `hide_selectors`, and `block_requests` accept comma-separated or repeated values).
+
+### Core
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `url` | string | **required** | `http(s)` page to capture. Private IPs, `localhost`, and cloud metadata endpoints are blocked |
+| `format` | `png` \| `jpeg` \| `jpg` \| `webp` \| `pdf` | `png` | Output format |
+
+### Viewport
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `width` | 1–7680 | `1280` | Viewport width in px |
+| `height` | 1–4320 | `720` | Viewport height in px |
+| `full_page` | boolean | `false` | Capture the full scrollable page |
+| `scale_factor` | 1–3 | `1` | Device pixel ratio |
+| `viewport_device` | string | — | Device preset, e.g. `iphone_16_pro`, `pixel_9_pro`, `desktop_1920x1080` (overrides width/height/UA) |
+
+### Timing
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `wait_until` | `load` \| `domcontentloaded` \| `networkidle0` \| `networkidle2` \| `networkidle` | `networkidle2` | Lifecycle event to wait for |
+| `wait_for_timeout` | 0–60000 ms | `0` | Extra wait after load |
+| `wait_for_selector` | string | — | CSS selector to wait for before capture |
+| `delay` | 0–60000 ms | `0` | Alias for `wait_for_timeout` |
+
+### Visual
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `dark_mode` | boolean | `false` | Emulate `prefers-color-scheme: dark` |
+| `reduced_motion` | boolean | `false` | Emulate `prefers-reduced-motion: reduce` |
+| `media_type` | `screen` \| `print` | `screen` | Emulated CSS media type |
+
+### Capture area & quality
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `selector` | string | — | Capture a single element instead of the viewport |
+| `clip_x`, `clip_y`, `clip_width`, `clip_height` | number | — | Clip rectangle in px |
+| `quality` | 1–100 | `80` | JPEG/WebP quality |
+| `hide_selectors` | string[] | `[]` | CSS selectors to hide before capture |
+| `modify_css` | string | — | Extra CSS injected before capture |
+
+### Blocking & privacy
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `block_ads` | boolean | `false` | Block ad/tracker requests |
+| `block_cookie_banners` | boolean | `false` | Hide cookie-consent banners |
+| `block_trackers` | boolean | `false` | Block analytics/trackers |
+| `block_resources` | `document` `stylesheet` `image` `media` `font` `script` `xhr` `fetch` `websocket` … | `[]` | Resource types to abort |
+| `block_requests` | string[] | `[]` | URL substrings to abort |
+
+### Session & anti-bot
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `browser_cookies` | string (JSON) | — | Cookies to set before navigation |
+| `scripts` | string (JSON) | — | JS to evaluate before capture |
+| `stealth_mode` | boolean | `false` | Mask automation fingerprints |
+| `user_agent` | string | — | Override user agent |
+| `headers` | string (JSON) | — | Extra request headers |
+| `proxy` | string | — | Proxy URL for the render |
+
+### Geolocation
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `geolocation_latitude` | -90–90 | — | Emulated latitude |
+| `geolocation_longitude` | -180–180 | — | Emulated longitude |
+| `timezone` | string | — | IANA timezone, e.g. `America/New_York` |
+| `locale` | string | — | Locale, e.g. `en-US` |
+
+### Job extras & caching
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `webhook_url` | string | — | Accepted and stored; delivery starts with the webhook release |
+| `external_id` | string | — | Your idempotency/tracking id (max 255 chars), echoed back |
+| `cache_ttl` | 0–2592000 s | `86400` | Reuse identical captures for this long. `0` disables the cache |
+| `output_type` | `binary` \| `base64` \| `url` | `binary` | Preferred delivery once sync rendering ships |
+
+### Success responses
+
+New job — `202 Accepted`, header `X-Cache: MISS`:
+
+```json
+{
+  "id": "job_01h...",
+  "status": "pending",
+  "cached": false,
+  "poll_url": "/v1/screenshot/job_01h...",
+  "external_id": "order-123",
+  "created_at": "2026-09-07T14:00:00.000Z"
+}
+```
+
+Duplicate within `cache_ttl` — `200 OK`, header `X-Cache: HIT`, full [job object](/screenshot-api/jobs).
+
+### Failure responses
+
+| Status | Code | Meaning |
+|---|---|---|
+| 400 | `INVALID_PARAMS` | Param validation failed (`details` lists each field) |
+| 400 | `SSRF_BLOCKED` | URL is private, unresolvable, or uses a blocked protocol |
+| 401 | `UNAUTHORIZED` | Missing/invalid API key |
+| 402 | `PAYMENT_REQUIRED` | Daily or monthly quota exhausted |
+| 429 | `RATE_LIMITED` | Per-minute key limit hit (`Retry-After` set) |

@@ -11,9 +11,126 @@ datasource db {
   relationMode = "prisma"
 }
 
-// This is a stub model.
-// Delete it and add your own Prisma models.
-model Page {
-  id   Int    @id @default(autoincrement())
-  name String
+enum Plan {
+  free
+  basic
+  pro
+  scale
+  enterprise
+}
+
+enum JobStatus {
+  pending
+  processing
+  completed
+  failed
+}
+
+model Organization {
+  id                String    @id @default(cuid())
+  clerkId           String    @unique
+  plan              Plan      @default(free)
+  stripeCustomerId  String?   @unique
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  apiKeys       ApiKey[]
+  screenshotJobs ScreenshotJob[]
+  usageEvents   UsageEvent[]
+  webhookEndpoints WebhookEndpoint[]
+  schedules     Schedule[]
+
+  @@index([clerkId])
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  orgId      String
+  name       String
+  hash       String    @unique
+  prefix     String
+  plan       Plan      @default(free)
+  rpm        Int       @default(10)
+  dailyCap   Int       @default(1000)
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [clerkId], onDelete: Cascade)
+  screenshotJobs ScreenshotJob[]
+
+  @@index([orgId])
+  @@index([hash])
+}
+
+model ScreenshotJob {
+  id           String    @id @default(cuid())
+  orgId        String
+  apiKeyId     String?
+  status       JobStatus @default(pending)
+  paramsJson   Json
+  url          String
+  format       String    @default("png")
+  blobKey      String?
+  cacheKey     String?
+  width        Int?
+  height       Int?
+  fileSize     Int?
+  durationMs   Int?
+  error        String?
+  webhookUrl   String?
+  externalId   String?
+  billedUnits  Int       @default(1)
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+
+  organization Organization @relation(fields: [orgId], references: [clerkId], onDelete: Cascade)
+  apiKey       ApiKey?      @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  @@index([orgId, createdAt])
+  @@index([cacheKey])
+  @@index([status])
+}
+
+model UsageEvent {
+  id          String   @id @default(cuid())
+  orgId       String
+  type        String
+  billedUnits Int      @default(1)
+  createdAt   DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [clerkId], onDelete: Cascade)
+
+  @@index([orgId, createdAt])
+  @@index([orgId, type])
+}
+
+model WebhookEndpoint {
+  id         String   @id @default(cuid())
+  orgId      String
+  url        String
+  secret     String
+  events     String[]
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [clerkId], onDelete: Cascade)
+
+  @@index([orgId])
+}
+
+model Schedule {
+  id         String   @id @default(cuid())
+  orgId      String
+  url        String
+  paramsJson Json
+  cron       String
+  webhookUrl String?
+  active     Boolean  @default(true)
+  nextRunAt  DateTime
+  createdAt  DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [clerkId], onDelete: Cascade)
+
+  @@index([orgId])
+  @@index([nextRunAt, active])
 }

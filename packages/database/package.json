@@ -7,6 +7,7 @@
     "analyze": "prisma generate --no-hints --schema=./prisma/schema.prisma",
     "build": "prisma generate --no-hints --schema=./prisma/schema.prisma",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "seed": "tsx seed.ts",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "bufferutil": "^4.1.0",
     "dotenv": "^16.5.0",
     "prisma": "7.4.2",
+    "tsx": "^4.23.13",
     "typescript": "^5.9.3"
   }
 }

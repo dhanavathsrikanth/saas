@@ -1,0 +1,103 @@
+---
+title: 'Quickstart'
+description: 'Take your first screenshot in under a minute'
+---
+
+## 1. Get an API key
+
+Create a key in the dashboard under **API Keys**. Every example below uses `$API_KEY` for it. See [Authentication](/screenshot-api/authentication) for details.
+
+## 2. Capture a screenshot
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.yourdomain.com/v1/screenshot" \
+  -H "x-api-key: $API_KEY" \
+  -H "content-type: application/json" \
+  -d '{"url": "https://example.com", "full_page": true}'
+```
+
+```javascript JavaScript
+const res = await fetch("https://api.yourdomain.com/v1/screenshot", {
+  method: "POST",
+  headers: { "x-api-key": process.env.SCREENSHOT_API_KEY, "content-type": "application/json" },
+  body: JSON.stringify({ url: "https://example.com", full_page: true }),
+});
+const job = await res.json();
+console.log(job.poll_url); // /v1/screenshot/<id>
+```
+
+```python Python
+import os, requests
+
+res = requests.post(
+    "https://api.yourdomain.com/v1/screenshot",
+    headers={"x-api-key": os.environ["SCREENSHOT_API_KEY"]},
+    json={"url": "https://example.com", "full_page": True},
+)
+print(res.json()["poll_url"])  # /v1/screenshot/<id>
+```
+</CodeGroup>
+
+The API responds with `202 Accepted` and a job you poll until it completes:
+
+```json
+{
+  "id": "job_01h...",
+  "status": "pending",
+  "cached": false,
+  "poll_url": "/v1/screenshot/job_01h...",
+  "external_id": null,
+  "created_at": "2026-09-07T14:00:00.000Z"
+}
+```
+
+## 3. Poll for completion
+
+```bash
+curl -H "x-api-key: $API_KEY" \
+  "https://api.yourdomain.com/v1/screenshot/job_01h..."
+```
+
+```json
+{
+  "id": "job_01h...",
+  "status": "completed",
+  "url": "https://example.com",
+  "format": "png",
+  "width": 1280,
+  "height": 720,
+  "cached": false,
+  "result_url": "https://cdn.yourdomain.com/...",
+  "error": null,
+  "billed_units": 1,
+  "duration_ms": 1840,
+  "external_id": null,
+  "created_at": "2026-09-07T14:00:00.000Z",
+  "completed_at": "2026-09-07T14:00:02.000Z"
+}
+```
+
+Job statuses are `pending` → `processing` → `completed` (or `failed`, in which case `error` explains why).
+
+## 4. Check your usage
+
+```bash
+curl -H "x-api-key: $API_KEY" \
+  "https://api.yourdomain.com/v1/usage"
+```
+
+## Prefer GET?
+
+Every capture parameter also works as a query string — handy for `<img>` tags and quick tests:
+
+```bash
+curl -H "x-api-key: $API_KEY" \
+  "https://api.yourdomain.com/v1/screenshot?url=https://example.com&width=1920&dark_mode=true"
+```
+
+## Migrating from ScreenshotOne?
+
+- `access_key` → `x-api-key` header
+- `url`, `viewport_width`, `viewport_height`, `full_page`, `format`, `dark_mode`, `block_ads`, `delay` and 40+ more parameters are accepted with the same names where applicable — see [Capture a screenshot](/screenshot-api/capture)
+- Webhook delivery and sync binary responses arrive with the render engine; today the API is async (create → poll)

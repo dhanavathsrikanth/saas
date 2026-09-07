@@ -1,0 +1,43 @@
+---
+title: 'Usage & quotas'
+description: 'GET /v1/usage — inspect plan quota consumption'
+---
+
+```http
+GET /v1/usage
+```
+
+## Response
+
+```json
+{
+  "org_id": "org_abc",
+  "plan": "pro",
+  "period": {
+    "start": "2026-09-01T00:00:00.000Z",
+    "end": "2026-10-01T00:00:00.000Z"
+  },
+  "monthly": { "used": 1250, "limit": 10000, "remaining": 8750 },
+  "daily": { "used": 120, "cap": 1000, "remaining": 880 }
+}
+```
+
+- `monthly` tracks your plan quota for the current UTC calendar month.
+- `daily` tracks the per-key daily cap; it resets at midnight UTC.
+- Enterprise plans return `null` for `limit`/`remaining` (unlimited).
+
+## Plan quotas
+
+| Plan | Monthly captures |
+|---|---|
+| Free | 100 |
+| Basic | 2,000 |
+| Pro | 10,000 |
+| Scale | 50,000 |
+| Enterprise | Unlimited |
+
+Every successful capture consumes 1 billed unit. Failed validations (400s) never consume quota — metering happens only when a job is accepted.
+
+## When quota runs out
+
+The API returns `402 PAYMENT_REQUIRED`. Upgrade the organization plan or wait for the reset window; per-key `rpm`/`dailyCap` can also be raised from the dashboard.

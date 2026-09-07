@@ -1,0 +1,53 @@
+---
+title: 'Authentication'
+description: 'Authenticate with the Screenshot API using API keys'
+---
+
+## API keys
+
+Every request to the Screenshot API must include your API key in the `x-api-key` header. (The `Authorization: Bearer <key>` form is also accepted.)
+
+```bash
+curl -H "x-api-key: sk_live_abc123..." \
+  "https://api.yourdomain.com/v1/usage"
+```
+
+<Warning>
+  Never expose API keys in client-side JavaScript or public repositories.
+  Create separate keys per environment and revoke compromised keys immediately
+  from the dashboard under **API Keys**.
+</Warning>
+
+## Creating a key
+
+1. Sign in to the dashboard and select your organization.
+2. Go to **API Keys → Create key**.
+3. Give it a name (for example `production`) and copy the full key — it is shown only once.
+
+Keys are scoped to a single organization. Usage, quotas, and billing are metered per organization, so one user can belong to multiple organizations with isolated keys and limits.
+
+## Key limits
+
+Each key carries its own guardrails, configurable from the dashboard:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `rpm` | 10 | Max requests per minute for this key |
+| `dailyCap` | 1,000 | Max captures per day for this key |
+
+Plan-level monthly quotas apply on top of key limits. See [Rate limits](/screenshot-api/rate-limits).
+
+## Error responses
+
+| Status | Code | Meaning |
+|---|---|---|
+| 401 | `UNAUTHORIZED` | Missing, invalid, or revoked API key |
+
+```json
+{
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid or revoked API key."
+  }
+}
+```

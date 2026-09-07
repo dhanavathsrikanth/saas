@@ -1,0 +1,69 @@
+---
+title: 'Errors'
+description: 'Error format, codes, and how to handle them'
+---
+
+## Format
+
+All errors share one shape:
+
+```json
+{
+  "error": {
+    "code": "INVALID_PARAMS",
+    "message": "Invalid request parameters",
+    "details": [{ "path": "width", "message": "Number must be less than or equal to 7680" }]
+  }
+}
+```
+
+`details` is present for validation and quota errors, and omitted otherwise.
+
+## Codes
+
+| Status | Code | Retry? | Meaning |
+|---|---|---|---|
+| 400 | `INVALID_PARAMS` | Fix request | Param failed validation; see `details` |
+| 400 | `SSRF_BLOCKED` | Fix request | URL is private, unresolvable, or a blocked protocol |
+| 401 | `UNAUTHORIZED` | Fix key | Missing, invalid, or revoked API key |
+| 402 | `PAYMENT_REQUIRED` | Upgrade/wait | Daily or monthly quota exhausted |
+| 404 | `NOT_FOUND` | Fix id | No such job in your organization |
+| 429 | `RATE_LIMITED` | Back off | Per-minute key limit; honor `Retry-After` |
+| 500 | `INTERNAL_ERROR` | Retry | Unexpected failure; safe to retry |
+| 503 | — | Retry | `/v1/health` reports `database: down` |
+
+## Handling guidance
+
+<CodeGroup>
+```javascript JavaScript
+const res = await fetch(job.poll_url, { headers });
+if (res.status === 429) {
+  const wait = Number(res.headers.get("Retry-After") ?? 60) * 1000;
+  await new Promise((r) => setTimeout(r, wait));
+  // retry
+}
+if (res.status === 402) {
+  // surface upgrade prompt; do not hot-loop
+}
+const body = await res.json();
+if (body.status === "failed") {
+  console.error("render failed:", body.error);
+}
+```
+
+```python Python
+if res.status_code == 429:
+    wait = int(res.headers.get("Retry-After", 60))
+    time.sleep(wait)  # then retry once
+elif res.status_code == 402:
+    raise QuotaExceeded(res.json()["error"]["message"])
+```
+</CodeGroup>
+
+## Health
+
+`GET /v1/health` (no auth) reports gateway and database status — poll it from your status page or load balancer:
+
+```json
+{ "status": "ok", "database": "up", "version": "v1", "time": "2026-09-07T14:00:00.000Z" }
+```

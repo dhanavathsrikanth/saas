@@ -1,0 +1,338 @@
+export interface DevicePreset {
+  name: string;
+  width: number;
+  height: number;
+  scaleFactor: number;
+  userAgent: string;
+  mobile: boolean;
+  touch: boolean;
+}
+
+const ua = (name: string, os: string, browser = "Chrome/131.0.0.0 Safari/537.36") =>
+  `Mozilla/5.0 (${os}) AppleWebKit/537.36 (KHTML, like Gecko) ${name} ${browser}`;
+
+export const devices: DevicePreset[] = [
+  // iPhones
+  {
+    name: "iphone_16_pro_max",
+    width: 440,
+    height: 956,
+    scaleFactor: 3,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_16_pro",
+    width: 402,
+    height: 874,
+    scaleFactor: 3,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_16",
+    width: 393,
+    height: 852,
+    scaleFactor: 3,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_15_pro_max",
+    width: 430,
+    height: 932,
+    scaleFactor: 3,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_15_pro",
+    width: 393,
+    height: 852,
+    scaleFactor: 3,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_15",
+    width: 393,
+    height: 852,
+    scaleFactor: 3,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_14_pro_max",
+    width: 430,
+    height: 932,
+    scaleFactor: 3,
+    userAgent: ua("Version/16.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 16_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_14",
+    width: 390,
+    height: 844,
+    scaleFactor: 3,
+    userAgent: ua("Version/16.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 16_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "iphone_se",
+    width: 375,
+    height: 667,
+    scaleFactor: 2,
+    userAgent: ua("Version/15.0 Mobile/15E148 Safari/604.1", "iPhone; CPU iPhone OS 15_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+
+  // iPads
+  {
+    name: "ipad_pro_13",
+    width: 1032,
+    height: 1376,
+    scaleFactor: 2,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPad; CPU OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "ipad_pro_12_9",
+    width: 1024,
+    height: 1366,
+    scaleFactor: 2,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPad; CPU OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "ipad_10_9",
+    width: 820,
+    height: 1180,
+    scaleFactor: 2,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPad; CPU OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "ipad_mini",
+    width: 744,
+    height: 1133,
+    scaleFactor: 2,
+    userAgent: ua("Version/17.0 Mobile/15E148 Safari/604.1", "iPad; CPU OS 17_0 like Mac OS X"),
+    mobile: true,
+    touch: true,
+  },
+
+  // Android phones
+  {
+    name: "pixel_9_pro",
+    width: 412,
+    height: 915,
+    scaleFactor: 3,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 14; Pixel 9 Pro"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "pixel_8",
+    width: 412,
+    height: 915,
+    scaleFactor: 2.625,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 14; Pixel 8"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "pixel_7",
+    width: 412,
+    height: 915,
+    scaleFactor: 2.625,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 13; Pixel 7"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "galaxy_s24",
+    width: 384,
+    height: 838,
+    scaleFactor: 3,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 14; SM-S921B"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "galaxy_s23_ultra",
+    width: 412,
+    height: 915,
+    scaleFactor: 3.5,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 13; SM-S918B"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "galaxy_a54",
+    width: 412,
+    height: 915,
+    scaleFactor: 2.5,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 13; SM-A546B"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "xiaomi_14",
+    width: 393,
+    height: 873,
+    scaleFactor: 2.75,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 14; 23127PN0CC"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "oneplus_12",
+    width: 412,
+    height: 915,
+    scaleFactor: 2.625,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 14; CPH2583"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "oppo_find_x7",
+    width: 412,
+    height: 915,
+    scaleFactor: 2.75,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 14; PHZ110"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "motorola_edge",
+    width: 412,
+    height: 892,
+    scaleFactor: 2.75,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 14; XT2313-1"),
+    mobile: true,
+    touch: true,
+  },
+
+  // Common Android views
+  {
+    name: "android_common",
+    width: 412,
+    height: 915,
+    scaleFactor: 2,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 13; K"),
+    mobile: true,
+    touch: true,
+  },
+  {
+    name: "android_large",
+    width: 412,
+    height: 915,
+    scaleFactor: 3,
+    userAgent: ua("Mobile/15E148 Safari/604.1", "Linux; Android 13; K"),
+    mobile: true,
+    touch: true,
+  },
+
+  // Desktops
+  {
+    name: "desktop_1920x1080",
+    width: 1920,
+    height: 1080,
+    scaleFactor: 1,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Windows NT 10.0; Win64; x64"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "desktop_2560x1440",
+    width: 2560,
+    height: 1440,
+    scaleFactor: 1,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Windows NT 10.0; Win64; x64"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "desktop_1280x720",
+    width: 1280,
+    height: 720,
+    scaleFactor: 1,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Windows NT 10.0; Win64; x64"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "desktop_1536x864",
+    width: 1536,
+    height: 864,
+    scaleFactor: 1,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Windows NT 10.0; Win64; x64"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "macbook_air_15",
+    width: 1728,
+    height: 1117,
+    scaleFactor: 2,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Macintosh; Intel Mac OS X 10_15_7"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "macbook_pro_16",
+    width: 1728,
+    height: 1117,
+    scaleFactor: 2,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Macintosh; Intel Mac OS X 10_15_7"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "imac_24",
+    width: 1920,
+    height: 1080,
+    scaleFactor: 2,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Macintosh; Intel Mac OS X 10_15_7"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "windows_laptop",
+    width: 1536,
+    height: 864,
+    scaleFactor: 1,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "Windows NT 10.0; Win64; x64"),
+    mobile: false,
+    touch: false,
+  },
+  {
+    name: "linux_desktop",
+    width: 1920,
+    height: 1080,
+    scaleFactor: 1,
+    userAgent: ua("Chrome/131.0.0.0 Safari/537.36", "X11; Linux x86_64"),
+    mobile: false,
+    touch: false,
+  },
+];
+
+const deviceByName = new Map(devices.map((d) => [d.name, d]));
+
+export function getDevice(name: string): DevicePreset | undefined {
+  return deviceByName.get(name);
+}
+
+export const deviceNames = devices.map((d) => d.name);

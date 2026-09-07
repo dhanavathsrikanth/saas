@@ -1,0 +1,52 @@
+---
+title: 'Job status'
+description: 'GET /v1/screenshot/:id — poll a capture job'
+---
+
+```http
+GET /v1/screenshot/:id
+```
+
+Jobs are scoped to your organization — requesting another organization's id returns `404`, indistinguishable from a missing job.
+
+## Response
+
+```json
+{
+  "id": "job_01h...",
+  "status": "completed",
+  "url": "https://example.com",
+  "format": "png",
+  "width": 1280,
+  "height": 720,
+  "cached": false,
+  "result_url": "https://cdn.yourdomain.com/...",
+  "error": null,
+  "billed_units": 1,
+  "duration_ms": 1840,
+  "external_id": "order-123",
+  "created_at": "2026-09-07T14:00:00.000Z",
+  "completed_at": "2026-09-07T14:00:02.000Z"
+}
+```
+
+| Field | Description |
+|---|---|
+| `status` | `pending` → `processing` → `completed`, or `failed` |
+| `cached` | `true` when served from a previous identical capture |
+| `result_url` | CDN URL of the finished image. `null` while pending/processing |
+| `error` | Failure reason when `status` is `failed`, else `null` |
+| `billed_units` | Quota units consumed (1 per capture) |
+| `duration_ms` | Render time in milliseconds, `null` until complete |
+| `external_id` | The id you passed at creation, if any |
+
+## Polling guidance
+
+Poll every 2–3 seconds with a timeout around 60 seconds. Stop early on `completed` or `failed`. Webhook delivery (push instead of poll) ships with the webhook release — pass `webhook_url` today and it is stored on the job.
+
+## Errors
+
+| Status | Code | Meaning |
+|---|---|---|
+| 401 | `UNAUTHORIZED` | Missing/invalid API key |
+| 404 | `NOT_FOUND` | No such job in your organization |

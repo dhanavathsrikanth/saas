@@ -1,0 +1,29 @@
+---
+title: 'Rate limits'
+description: 'Per-key rate limits, quota layers, and response headers'
+---
+
+Three independent layers protect the API. They are evaluated in this order:
+
+1. **Per-minute key limit** — `rpm` on the API key (default 10). Exceeding it returns `429 RATE_LIMITED` with a `Retry-After` header.
+2. **Daily key cap** — `dailyCap` on the API key (default 1,000, resets midnight UTC). Exceeding it returns `402 PAYMENT_REQUIRED`.
+3. **Monthly plan quota** — per organization (Free 100 → Scale 50,000 → Enterprise unlimited). Exceeding it returns `402 PAYMENT_REQUIRED`.
+
+## Response headers
+
+Every `/v1/*` response carries:
+
+| Header | Meaning |
+|---|---|
+| `X-RateLimit-Limit` | Requests allowed per minute for this key |
+| `X-RateLimit-Remaining` | Requests left in the current window |
+| `X-RateLimit-Reset` | Unix timestamp when the window resets |
+| `X-RateLimit-Provider` | `upstash` (shared Redis) or `memory` (single-instance fallback) |
+| `Retry-After` | Seconds to wait — present on `429` only |
+| `X-Cache` | `HIT`/`MISS` on capture responses |
+
+## Production guidance
+
+- Configure Upstash Redis (`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`) so limits are shared across instances. Without it the gateway falls back to per-instance in-memory windows and reports `X-RateLimit-Provider: memory`.
+- Burst traffic: keep one key per workload so a scraper cannot starve your production key.
+- Cache-friendly workloads (dashboards, link previews) should set a long `cache_ttl` — cache hits skip rendering and still return instantly, without consuming extra quota beyond the original capture.
